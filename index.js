@@ -1,13 +1,13 @@
-import express from "express";
+const express = require("express");
 
 const app = express();
 
 app.get("/", (req, res) => {
   res.status(200);
-  res.send("Welcome!!!");
+  res.send("Welcome!!");
 });
 
-app.listen(80, (err) => {
+app.listen(3000, (err) => {
   if (!err) {
     console.log("Server running...");
   } else {

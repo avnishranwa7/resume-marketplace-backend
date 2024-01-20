@@ -7,7 +7,7 @@ app.get("/", (req, res) => {
   res.send("Welcome!!");
 });
 
-app.listen(3000, (err) => {
+app.listen(80, (err) => {
   if (!err) {
     console.log("Server running...");
   } else {

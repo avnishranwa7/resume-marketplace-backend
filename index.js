@@ -11,6 +11,12 @@ dotenv.config();
 const app = express();
 
 app.use(cors());
+
+app.get("/", (req, res) => {
+  res.status(200);
+  res.json("Hello World");
+});
+
 app.use(bodyParser.json());
 app.use("/auth", authRouter);
 

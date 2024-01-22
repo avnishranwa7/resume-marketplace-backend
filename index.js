@@ -3,12 +3,25 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const fs = require("fs");
+const https = require("https");
 
 // local imports
 const authRouter = require("./routes/auth.js");
 
 dotenv.config();
 const app = express();
+
+const options = {
+  key: fs.readFileSync(
+    "/etc/letsencrypt/live/backend.resume-marketplace.com/privkey.pem"
+  ),
+  cert: fs.readFileSync(
+    "/etc/letsencrypt/live/backend.resume-marketplace.com/fullchain.pem"
+  ),
+};
+
+const server = https.createServer(options, app);
 
 app.use(cors());
 
@@ -31,6 +44,6 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    app.listen(process.env.PORT);
+    server.listen(process.env.PORT);
   })
   .catch((err) => console.log(err));

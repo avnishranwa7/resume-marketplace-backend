@@ -17,7 +17,7 @@ const options = {
     "/etc/letsencrypt/live/backend.resume-marketplace.com/privkey.pem"
   ),
   cert: fs.readFileSync(
-    "/etc/letsencrypt/live/backend.resume-marketplace.com/fullchain.pem"
+    "/etc/letsencrypt/live/backend.resume-marketplace.com/cert.pem"
   ),
 };
 

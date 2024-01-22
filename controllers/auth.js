@@ -17,7 +17,7 @@ const signup = async (req, res, next) => {
       error.statusCode = 422;
       error.data = [
         ...errors.array(),
-        {
+        password !== confirmPassword && {
           msg: "Passwords do not match",
           path: "confirmPassword",
           value: confirmPassword,

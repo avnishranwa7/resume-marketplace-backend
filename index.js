@@ -28,10 +28,9 @@ app.use((error, req, res, next) => {
   res.status(statusCode).json({ message, data });
 });
 
-console.log(process.env.MONGODB_URI);
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    app.listen(3000);
+    app.listen(3001);
   })
   .catch((err) => console.log(err));

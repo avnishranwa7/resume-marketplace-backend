@@ -13,12 +13,8 @@ dotenv.config();
 const app = express();
 
 const options = {
-  key: fs.readFileSync(
-    "/etc/letsencrypt/live/backend.resume-marketplace.com/privkey.pem"
-  ),
-  cert: fs.readFileSync(
-    "/etc/letsencrypt/live/backend.resume-marketplace.com/cert.pem"
-  ),
+  key: fs.readFileSync(__dirname + "/certificates/privkey.pem"),
+  cert: fs.readFileSync(__dirname + "/certificates/cert.pem"),
 };
 
 const server = https.createServer(options, app);

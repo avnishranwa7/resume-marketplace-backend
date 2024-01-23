@@ -59,11 +59,8 @@ const verification = async (req, res, next) => {
       expiresIn: "1d",
     });
 
-    await User.findOneAndUpdate(
-      { email },
-      { "active.token": token, "active.generationTime": new Date() }
-    );
-    const response = await sendEmailVerification(email);
+    await User.findOneAndUpdate({ email }, { "active.token": token });
+    const response = await sendEmailVerification(email, token);
     if (response.accepted.length === 0) {
       const error = new Error("Could not send verification email");
       error.statusCode = 424;
@@ -81,4 +78,35 @@ const verification = async (req, res, next) => {
   }
 };
 
-module.exports = { signup, verification };
+const completeVerification = async (req, res, next) => {
+  const email = req.body.email;
+  const token = req.body.token;
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.ACTIVE_TOKEN_SECRET);
+    if (decodedToken.email !== email) {
+      const error = new Error("Verification Failed");
+      error.statusCode = 422;
+      throw error;
+    }
+
+    await User.findOneAndUpdate(
+      { email },
+      { $unset: { "active.token": "" }, $set: { "active.status": true } }
+    );
+
+    res.status(200).json({
+      message: "Account verified",
+    });
+  } catch (err) {
+    if (err.message === "invalid token") err.message = "Invalid Token";
+    if (err.message === "jwt expired")
+      err.message = "Link expired. Please login to generate a new link";
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+module.exports = { signup, verification, completeVerification };

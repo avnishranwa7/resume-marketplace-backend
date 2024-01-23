@@ -15,6 +15,20 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  active: {
+    status: {
+      type: Boolean,
+      required: true,
+    },
+    token: {
+      type: String,
+      required: false,
+    },
+    generationTime: {
+      type: Date,
+      required: false,
+    },
+  },
 });
 
 module.exports = mongoose.model("User", userSchema);

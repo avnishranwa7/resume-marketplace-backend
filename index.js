@@ -40,6 +40,8 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(() => {
-    server.listen(process.env.PORT);
+    process.env.NODE_ENV === "development"
+      ? app.listen(process.env.PORT)
+      : server.listen(process.env.PORT);
   })
   .catch((err) => console.log(err));

@@ -3,7 +3,7 @@ const { body } = require("express-validator");
 
 // local imports
 const User = require("../models/user.js");
-const { signup } = require("../controllers/auth.js");
+const { signup, verification } = require("../controllers/auth.js");
 
 const router = express.Router();
 
@@ -32,5 +32,7 @@ router.put(
   ],
   signup
 );
+
+router.put("/verify", verification);
 
 module.exports = router;

@@ -11,13 +11,23 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-const sendEmailVerification = (email) => {
+const sendEmailVerification = (email, token) => {
   try {
+    let url;
+    if (process.env.NODE_ENV === "production") url = process.env.FRONTEND_URL;
+    else url = process.env.LOCAL_FRONTEND_URL;
+
     return transporter.sendMail({
       sender: "resume-marketplace@gmail.com",
       to: email,
       subject: "Verify email address for Resume-Marketplace",
-      text: "Verify email address for Resume-Marketplace",
+      html:
+        "Please click the attached link to verify your account " +
+        url +
+        "/complete-verification?token=" +
+        token +
+        "?email=" +
+        email,
     });
   } catch (err) {
     if (!err.statusCode) {

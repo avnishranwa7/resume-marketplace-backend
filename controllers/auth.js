@@ -52,6 +52,40 @@ const signup = async (req, res, next) => {
   }
 };
 
+const login = async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      const error = new Error("Verification failed");
+      error.statusCode = 422;
+      error.data = errors.array();
+      throw error;
+    }
+
+    const hashPassword = await User.findOne({ email }).select("password");
+    const passwordMatch = await bcrypt.compare(password, hashPassword.password);
+
+    if (!passwordMatch) {
+      const error = new Error("Invalid email/password");
+      error.statusCode = 401;
+      throw error;
+    }
+
+    const user = await User.findOne({ email }).select("email");
+    res.status(200).json({
+      message: "Successfully logged in",
+      email: user.email,
+      userId: user._id,
+    });
+  } catch (err) {
+    if (!err.statusCode) err.statusCode = 500;
+    next(err);
+  }
+};
+
 const verification = async (req, res, next) => {
   const email = req.body.email;
   try {
@@ -109,4 +143,4 @@ const completeVerification = async (req, res, next) => {
   }
 };
 
-module.exports = { signup, verification, completeVerification };
+module.exports = { signup, verification, completeVerification, login };

@@ -39,7 +39,9 @@ const createMarketplace = async (req, res, next) => {
     });
     const result = await marketplace.save();
 
-    await User.findByIdAndUpdate(userId, { marketplaces: [result._id] });
+    const user = await User.findById(userId).select("marketplaces");
+    const newMarketplaces = [...user.marketplaces, result._id];
+    await User.findByIdAndUpdate(userId, { marketplaces: newMarketplaces });
     res.status(201).json({
       message: "Marketplace created",
       id: result._id,

@@ -74,7 +74,15 @@ const login = async (req, res, next) => {
       throw error;
     }
 
-    const user = await User.findOne({ email }).select("email");
+    const user = await User.findOne({ email }).select("email active.status");
+    if (!user.active.status) {
+      const error = new Error(
+        "Please activate your account by clicking the link sent to your email"
+      );
+      error.statusCode = 401;
+      throw error;
+    }
+
     res.status(200).json({
       message: "Successfully logged in",
       email: user.email,
@@ -103,6 +111,7 @@ const verification = async (req, res, next) => {
 
     res.status(200).json({
       message: "Verification email delivered successfully",
+      token,
     });
   } catch (err) {
     if (!err.statusCode) {

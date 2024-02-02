@@ -24,11 +24,8 @@ const userSchema = new Schema({
       type: String,
       required: false,
     },
-    generationTime: {
-      type: Date,
-      required: false,
-    },
   },
+  marketplaces: [String],
 });
 
 module.exports = mongoose.model("User", userSchema);

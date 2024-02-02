@@ -27,7 +27,7 @@ const createMarketplace = async (req, res, next) => {
     const userId = req.body.userId;
     const name = req.body.name;
     const category = req.body.category;
-    const tags = JSON.parse(req.body.tags) || [];
+    const tags = req.body.tags ? JSON.parse(req.body.tags) : [];
     const fileUrl = req.file.path;
 
     const marketplace = new Marketplace({

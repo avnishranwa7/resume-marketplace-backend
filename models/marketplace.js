@@ -18,6 +18,10 @@ const marketplaceSchema = new Schema({
   },
   tags: [String],
   resumes: [String],
+  generationTime: {
+    type: Date,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("Marketplace", marketplaceSchema);

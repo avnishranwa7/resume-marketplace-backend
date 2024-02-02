@@ -1,18 +1,18 @@
 // local imports
 const User = require("../models/user.js");
 const Marketplace = require("../models/marketplace.js");
-const { handleFileUpload } = require("../services/handleFileUpload.js");
 
 const getMarketplaces = async (req, res, next) => {
-  const email = req.query.email;
+  const userId = req.query.userId;
 
   try {
-    const user = await User.findOne({ email }).select("marketplaces");
-    let marketplaces = [];
+    const marketplaces = Marketplace.find({ userId }).sort({
+      generationTime: -1,
+    });
 
     res.status(200).json({
       message: "Marketplaces fetched",
-      marketplaces,
+      marketplaces: await marketplaces,
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -36,6 +36,7 @@ const createMarketplace = async (req, res, next) => {
       category,
       tags,
       resumes: [fileUrl],
+      generationTime: new Date(),
     });
     const result = await marketplace.save();
 

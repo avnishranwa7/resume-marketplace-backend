@@ -5,9 +5,21 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const fs = require("fs");
 const https = require("https");
+const multer = require("multer");
+const path = require("path");
 
 // local imports
 const authRouter = require("./routes/auth.js");
+const marketplaceRouter = require("./routes/marketplace.js");
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "uploads");
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + "-" + file.originalname);
+  },
+});
 
 dotenv.config();
 const app = express();
@@ -20,6 +32,8 @@ const options = {
 const server = https.createServer(options, app);
 
 app.use(cors());
+app.use(multer({ storage: fileStorage }).single("upload_file"));
+app.use(express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
   res.status(200);
@@ -28,6 +42,7 @@ app.get("/", (req, res) => {
 
 app.use(bodyParser.json());
 app.use("/auth", authRouter);
+app.use(marketplaceRouter);
 
 app.use((error, req, res, next) => {
   const statusCode = error.statusCode || 500;

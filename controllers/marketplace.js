@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+
 // local imports
 const User = require("../models/user.js");
 const Marketplace = require("../models/marketplace.js");
@@ -40,7 +42,8 @@ const createMarketplace = async (req, res, next) => {
     });
     const result = await marketplace.save();
 
-    const user = await User.findById(userId).select("marketplaces");
+    const user = await User.findById(userId).select("marketplaces active");
+
     const newMarketplaces = [...user.marketplaces, result._id];
     await User.findByIdAndUpdate(userId, { marketplaces: newMarketplaces });
     res.status(201).json({
@@ -49,7 +52,7 @@ const createMarketplace = async (req, res, next) => {
     });
   } catch (err) {
     if (!err.statusCode) {
-      err.statusCode = 422;
+      err.statusCode = 500;
     }
     next(err);
   }

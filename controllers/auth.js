@@ -83,10 +83,20 @@ const login = async (req, res, next) => {
       throw error;
     }
 
+    const token = jwt.sign(
+      { email, password },
+      process.env.ACTIVE_TOKEN_SECRET,
+      {
+        expiresIn: "7d",
+      }
+    );
+    await User.findOneAndUpdate({ email }, { "active.token": token });
+
     res.status(200).json({
       message: "Successfully logged in",
       email: user.email,
       userId: user._id,
+      token: token,
     });
   } catch (err) {
     if (!err.statusCode) err.statusCode = 500;

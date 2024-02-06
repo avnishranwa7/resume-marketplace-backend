@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const path = require("path");
 
 // local imports
 const User = require("../models/user.js");
@@ -58,4 +59,20 @@ const createMarketplace = async (req, res, next) => {
   }
 };
 
-module.exports = { getMarketplaces, createMarketplace };
+const getResume = (req, res, next) => {
+  try {
+    const filename = path.join(
+      path.resolve("./"),
+      "uploads",
+      req.query.filename
+    );
+    res.status(200).download(filename);
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+module.exports = { getMarketplaces, createMarketplace, getResume };

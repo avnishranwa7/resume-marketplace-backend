@@ -39,6 +39,18 @@ const signup = async (req, res, next) => {
       active: { status: false },
     });
     const result = await user.save();
+
+    const token = jwt.sign({ email }, process.env.ACTIVE_TOKEN_SECRET, {
+      expiresIn: "1d",
+    });
+    await User.findOneAndUpdate({ email }, { "active.token": token });
+    const response = await sendEmailVerification(email, token);
+    if (response.accepted.length === 0) {
+      const error = new Error("Could not send verification email");
+      error.statusCode = 424;
+      throw error;
+    }
+
     res.status(201).json({
       message: "New user created",
       userId: result._id,
@@ -104,33 +116,6 @@ const login = async (req, res, next) => {
   }
 };
 
-const verification = async (req, res, next) => {
-  const email = req.body.email;
-  try {
-    const token = jwt.sign({ email }, process.env.ACTIVE_TOKEN_SECRET, {
-      expiresIn: "1d",
-    });
-
-    await User.findOneAndUpdate({ email }, { "active.token": token });
-    const response = await sendEmailVerification(email, token);
-    if (response.accepted.length === 0) {
-      const error = new Error("Could not send verification email");
-      error.statusCode = 424;
-      throw error;
-    }
-
-    res.status(200).json({
-      message: "Verification email delivered successfully",
-      token,
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
 const completeVerification = async (req, res, next) => {
   const email = req.body.email;
   const token = req.body.token;
@@ -162,4 +147,4 @@ const completeVerification = async (req, res, next) => {
   }
 };
 
-module.exports = { signup, verification, completeVerification, login };
+module.exports = { signup, completeVerification, login };

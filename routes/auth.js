@@ -5,7 +5,6 @@ const { body } = require("express-validator");
 const User = require("../models/user.js");
 const {
   signup,
-  verification,
   completeVerification,
   login,
 } = require("../controllers/auth.js");
@@ -60,8 +59,6 @@ router.post(
   ],
   login
 );
-
-router.put("/verify", verification);
 
 router.put("/complete-verification", completeVerification);
 

@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 const {
   getMarketplaces,
   createMarketplace,
+  getResumes,
   getResume,
 } = require("../controllers/marketplace");
 
@@ -46,6 +47,7 @@ function postMiddleware(req, res, next, cb) {
 router.get("/marketplaces", (req, res, next) => {
   getMiddleware(req, res, next, getMarketplaces);
 });
+router.post("/get-resumes", getResumes);
 router.get("/get-resume", getResume);
 
 router.post("/marketplace", (req, res, next) => {

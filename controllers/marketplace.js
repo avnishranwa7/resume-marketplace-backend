@@ -59,6 +59,47 @@ const createMarketplace = async (req, res, next) => {
   }
 };
 
+const getResumes = async (req, res, next) => {
+  let tags = req.body.tags || [];
+  const page = req.body.page || 1;
+  const offset = req.body.offset || 0;
+
+  tags = tags.map((tag) => tag.toLowerCase());
+  try {
+    let resumes = (
+      await Marketplace.find().select("_id userId resumes tags")
+    ).filter((r) => {
+      if (tags.length === 0) return true;
+
+      return (
+        r.tags.filter((tag) => tags.includes(tag.toLowerCase())).length > 0
+      );
+    });
+
+    let count = resumes.length;
+    const startIndex = Math.max(
+      (page + (offset <= 0 ? offset - 3 : offset + 1)) * 10,
+      0
+    );
+    const endIndex = Math.min(
+      (page + (offset < 0 ? offset - 2 : offset + 2)) * 10,
+      count
+    );
+    resumes = resumes.slice(startIndex, endIndex);
+
+    res.status(200).json({
+      message: "Resumes fetched successfully",
+      resumes,
+      count: Math.ceil(count / 10),
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 const getResume = (req, res, next) => {
   try {
     const filename = path.join(
@@ -75,4 +116,9 @@ const getResume = (req, res, next) => {
   }
 };
 
-module.exports = { getMarketplaces, createMarketplace, getResume };
+module.exports = {
+  getMarketplaces,
+  createMarketplace,
+  getResumes,
+  getResume,
+};

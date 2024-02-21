@@ -25,6 +25,26 @@ const userSchema = new Schema({
       required: false,
     },
   },
+  profile: {
+    location: {
+      city: {
+        type: String,
+        required: false,
+      },
+      state: {
+        type: String,
+        required: false,
+      },
+      country: {
+        type: String,
+        required: false,
+      },
+    },
+    yoe: {
+      type: Number,
+      required: false,
+    },
+  },
   marketplaces: [String],
 });
 

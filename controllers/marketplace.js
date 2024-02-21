@@ -33,6 +33,19 @@ const createMarketplace = async (req, res, next) => {
     const tags = req.body.tags ? JSON.parse(req.body.tags) : [];
     const fileUrl = req.file.path;
 
+    const user = await User.findById(userId).select(
+      "marketplaces active profile"
+    );
+    const city = user.profile.location.city || "";
+    const state = user.profile.location.state || "";
+    const country = user.profile.location.country || "";
+    const yeo = user.profile.yoe || -1;
+    if (city === "" || state === "" || country === "" || yeo === -1) {
+      const error = new Error("Please complete your profile");
+      error.statusCode = 422;
+      throw error;
+    }
+
     const marketplace = new Marketplace({
       userId,
       name,
@@ -42,8 +55,6 @@ const createMarketplace = async (req, res, next) => {
       generationTime: new Date(),
     });
     const result = await marketplace.save();
-
-    const user = await User.findById(userId).select("marketplaces active");
 
     const newMarketplaces = [...user.marketplaces, result._id];
     await User.findByIdAndUpdate(userId, { marketplaces: newMarketplaces });

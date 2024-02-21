@@ -11,6 +11,7 @@ const path = require("path");
 // local imports
 const authRouter = require("./routes/auth.js");
 const marketplaceRouter = require("./routes/marketplace.js");
+const userRouter = require("./routes/user.js");
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -43,6 +44,7 @@ app.get("/", (req, res) => {
 app.use(bodyParser.json());
 app.use("/auth", authRouter);
 app.use(marketplaceRouter);
+app.use(userRouter);
 
 app.use((error, req, res, next) => {
   const statusCode = error.statusCode || 500;

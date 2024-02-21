@@ -44,6 +44,10 @@ const userSchema = new Schema({
       type: Number,
       required: false,
     },
+    title: {
+      type: String,
+      required: false,
+    },
   },
   marketplaces: [String],
 });

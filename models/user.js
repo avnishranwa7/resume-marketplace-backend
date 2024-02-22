@@ -40,7 +40,7 @@ const userSchema = new Schema({
         required: false,
       },
     },
-    yoe: {
+    yeo: {
       type: Number,
       required: false,
     },

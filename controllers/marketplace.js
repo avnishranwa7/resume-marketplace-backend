@@ -36,11 +36,9 @@ const createMarketplace = async (req, res, next) => {
     const user = await User.findById(userId).select(
       "marketplaces active profile"
     );
-    const city = user.profile.location.city || "";
-    const state = user.profile.location.state || "";
     const country = user.profile.location.country || "";
-    const yeo = user.profile.yoe || -1;
-    if (city === "" || state === "" || country === "" || yeo === -1) {
+    const yeo = user.profile.yeo ?? -1;
+    if (country === "" || yeo === -1) {
       const error = new Error("Please complete your profile");
       error.statusCode = 422;
       throw error;
@@ -74,6 +72,17 @@ const getResumes = async (req, res, next) => {
   let tags = req.body.tags || [];
   const page = req.body.page || 1;
   const offset = req.body.offset || 0;
+  const city = req.body.city || "";
+  const state = req.body.state || "";
+  const country = req.body.country || "";
+  const yeo = req.body.yeo || "";
+
+  const users = await User.find({
+    ...(city !== "" && { "profile.location.city": city }),
+    ...(state !== "" && { "profile.location.state": state }),
+    ...(country !== "" && { "profile.location.country": country }),
+    ...(yeo !== "" && { "profile.yeo": +yeo ?? 0 }),
+  }).select("marketplaces");
 
   tags = tags.map((tag) => tag.toLowerCase());
   try {
@@ -86,6 +95,10 @@ const getResumes = async (req, res, next) => {
         r.tags.filter((tag) => tags.includes(tag.toLowerCase())).length > 0
       );
     });
+
+    resumes = resumes.filter((resume) =>
+      users.some((user) => user.marketplaces.includes(resume._id))
+    );
 
     let count = resumes.length;
     const startIndex = Math.max(

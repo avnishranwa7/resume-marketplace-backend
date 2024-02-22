@@ -72,6 +72,17 @@ const getResumes = async (req, res, next) => {
   let tags = req.body.tags || [];
   const page = req.body.page || 1;
   const offset = req.body.offset || 0;
+  const city = req.body.city || "";
+  const state = req.body.state || "";
+  const country = req.body.country || "";
+  const yeo = req.body.yeo || "";
+
+  const users = await User.find({
+    ...(city !== "" && { "profile.location.city": city }),
+    ...(state !== "" && { "profile.location.state": state }),
+    ...(country !== "" && { "profile.location.country": country }),
+    ...(yeo !== "" && { "profile.yeo": +yeo ?? 0 }),
+  }).select("marketplaces");
 
   tags = tags.map((tag) => tag.toLowerCase());
   try {
@@ -84,6 +95,10 @@ const getResumes = async (req, res, next) => {
         r.tags.filter((tag) => tags.includes(tag.toLowerCase())).length > 0
       );
     });
+
+    resumes = resumes.filter((resume) =>
+      users.some((user) => user.marketplaces.includes(resume._id))
+    );
 
     let count = resumes.length;
     const startIndex = Math.max(

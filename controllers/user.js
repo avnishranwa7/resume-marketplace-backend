@@ -28,6 +28,7 @@ const saveProfile = async (req, res, next) => {
   const city = req.body.city;
   const state = req.body.state;
   const country = req.body.country;
+  const yeo = req.body.yeo;
 
   try {
     const user = await User.findById(userId);
@@ -50,12 +51,19 @@ const saveProfile = async (req, res, next) => {
       throw error;
     }
 
+    if (yeo === undefined) {
+      const error = new Error("Years of Experience is required");
+      error.statusCode = 422;
+      throw error;
+    }
+
     await user.updateOne({
       name,
       "profile.title": title,
       "profile.location.city": city,
       "profile.location.state": state,
       "profile.location.country": country,
+      "profile.yeo": +yeo || 0,
     });
 
     res.status(200).json({

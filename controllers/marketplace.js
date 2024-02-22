@@ -36,11 +36,9 @@ const createMarketplace = async (req, res, next) => {
     const user = await User.findById(userId).select(
       "marketplaces active profile"
     );
-    const city = user.profile.location.city || "";
-    const state = user.profile.location.state || "";
     const country = user.profile.location.country || "";
-    const yeo = user.profile.yoe || -1;
-    if (city === "" || state === "" || country === "" || yeo === -1) {
+    const yeo = user.profile.yeo ?? -1;
+    if (country === "" || yeo === -1) {
       const error = new Error("Please complete your profile");
       error.statusCode = 422;
       throw error;
